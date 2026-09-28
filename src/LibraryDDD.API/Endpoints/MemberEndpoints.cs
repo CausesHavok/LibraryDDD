@@ -4,7 +4,7 @@ using LibraryDDD.Application.Members.RegisterMember;
 
 namespace LibraryDDD.Api.Endpoints;
 
-public static class MembersEndpoints
+public static class MemberEndpoints
 {
     public static void MapMembers(this WebApplication app)
     {
