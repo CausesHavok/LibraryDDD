@@ -14,7 +14,7 @@ public class Program
         builder.Services.AddInfrastructure();
 
         var app = builder.Build();
-        app.MapMembers();
+        app.MapMemberEndpoints();
         app.Run();
     }
 }

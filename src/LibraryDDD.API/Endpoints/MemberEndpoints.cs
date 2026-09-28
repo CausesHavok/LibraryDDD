@@ -6,7 +6,7 @@ namespace LibraryDDD.Api.Endpoints;
 
 public static class MemberEndpoints
 {
-    public static void MapMembers(this WebApplication app)
+    public static void MapMemberEndpoints(this WebApplication app)
     {
         app.MapPost("/members/register", async (
             RegisterMemberRequest request,
