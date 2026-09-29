@@ -8,11 +8,26 @@ LibraryDDD.Domain.Aggregates.Member.MemberId.Value.get -> System.Guid
 LibraryDDD.Domain.Aggregates.Member.MemberRegistered
 LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberID.get -> LibraryDDD.Domain.Aggregates.Member.MemberId!
 LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberRegistered(LibraryDDD.Domain.Aggregates.Member.MemberId! MemberID) -> void
+LibraryDDD.Domain.Common.DTO.AddressFields
+LibraryDDD.Domain.Common.DTO.AddressFields.AddressFields(string? Street, string? City, string? PostalCode, string? Country) -> void
+LibraryDDD.Domain.Common.DTO.AddressFields.City.get -> string?
+LibraryDDD.Domain.Common.DTO.AddressFields.City.init -> void
+LibraryDDD.Domain.Common.DTO.AddressFields.Country.get -> string?
+LibraryDDD.Domain.Common.DTO.AddressFields.Country.init -> void
+LibraryDDD.Domain.Common.DTO.AddressFields.PostalCode.get -> string?
+LibraryDDD.Domain.Common.DTO.AddressFields.PostalCode.init -> void
+LibraryDDD.Domain.Common.DTO.AddressFields.Street.get -> string?
+LibraryDDD.Domain.Common.DTO.AddressFields.Street.init -> void
 LibraryDDD.Domain.Common.Interfaces.IAggregateRoot
 LibraryDDD.Domain.Common.Interfaces.IAggregateRoot.ClearDomainEvents() -> void
 LibraryDDD.Domain.Common.Interfaces.IAggregateRoot.DomainEvents.get -> System.Collections.Generic.IReadOnlyCollection<LibraryDDD.Domain.Events.IDomainEvent!>!
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.None
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.Some
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.Some.Some(T Value) -> void
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.Some.Value.get -> T
+LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.Some.Value.init -> void
 LibraryDDD.Domain.Events.IDomainEvent
-static LibraryDDD.Domain.Aggregates.Member.MemberFactory.Create(string! name, string? phoneNumber, string? email, System.DateOnly dateOfBirth, string! membershipType, string? staffId, string? street, string? city, string? postalCode, string? country) -> LibraryDDD.Domain.Aggregates.Member.Member!
-LibraryDDD.Domain.Aggregates.Member.MemberFactoryFactory.Create(string! name, string? phoneNumber, string? email, System.DateOnly dateOfBirth, string! membershipType, string? staffId, string? street, string? city, string? postalCode, string? country) -> LibraryDDD.Domain.Aggregates.Member.Member!
-LibraryDDD.Domain.Aggregates.Member.MemberFactoryFactory.Create(string! name, string? phoneNumber, string? email, System.DateOnly dateOfBirth, string! membershipType, string? staffId, string? street, string? city, string? postalCode, string? country) -> LibraryDDD.Domain.Aggregates.Member.Member!
+static LibraryDDD.Domain.Aggregates.Member.MemberFactory.Create(string! name, string? phoneNumber, string? email, System.DateOnly dateOfBirth, string! membershipType, string? staffId, LibraryDDD.Domain.Common.DTO.AddressFields! addressFields) -> LibraryDDD.Domain.Aggregates.Member.Member!
 LibraryDDD.Domain.Aggregates.Member.MemberFactory
+static LibraryDDD.Domain.Common.ValueObjects.Maybe<T>.From(T? value) -> LibraryDDD.Domain.Common.ValueObjects.Maybe<T>!
