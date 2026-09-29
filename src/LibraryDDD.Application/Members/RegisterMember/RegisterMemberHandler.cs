@@ -1,4 +1,3 @@
-using LibraryDDD.Application.Common.Events;
 using LibraryDDD.Application.Common.Interfaces;
 using LibraryDDD.Domain.Aggregates.Member;
 namespace LibraryDDD.Application.Members.RegisterMember;
