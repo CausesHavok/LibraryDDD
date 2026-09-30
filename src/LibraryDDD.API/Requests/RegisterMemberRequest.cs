@@ -4,7 +4,7 @@ public sealed record RegisterMemberRequest(
     string Name,
     string? PhoneNumber,
     string? Email,
-    string? DateOfBirth,
+    string DateOfBirth,
     string MembershipType,
     string? StaffId,
     string? Street,
