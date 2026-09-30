@@ -1,4 +1,5 @@
 using LibraryDDD.Api.Requests;
+using LibraryDDD.Api.Parsing;
 using LibraryDDD.Application.Members.RegisterMember;
 using LibraryDDD.Application.Common.DTO;
 namespace LibraryDDD.Api.Mappers;
@@ -7,7 +8,7 @@ internal static class RegisterMemberCommandMapper
 {
     public static RegisterMemberCommand Create(RegisterMemberRequest request)
     {
-        var dateOfBirth = DateOnly.Parse(request.DateOfBirth!);
+        var dateOfBirth = ApiDateOnlyParser.Parse(request.DateOfBirth!);
 
         var address = new AddressInput(
             request.Street,
