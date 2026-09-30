@@ -12,7 +12,10 @@ public static class MemberEndpoints
             RegisterMemberRequest request,
             RegisterMemberHandler handler) =>
         {
-            RegisterMemberRequestValidator.Validate(request);
+            var errors = RegisterMemberRequestValidator.Validate(request);
+            if (errors.Count > 0)
+                return Results.ValidationProblem(errors);
+            
             var command = RegisterMemberCommandMapper.Create(request);
             var result = await handler.Handle(command);
             return Results.Ok(RegisterMemberResponseMapper.Map(result));
