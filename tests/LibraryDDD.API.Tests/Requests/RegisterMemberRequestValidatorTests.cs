@@ -29,7 +29,6 @@ public class RegisterMemberRequestValidatorTests
         Assert.Empty(errors);
     }
 
-
     [Fact]
     public void Validate_MissingName_ReturnsErrors()
     {
@@ -162,5 +161,29 @@ public class RegisterMemberRequestValidatorTests
         Assert.Contains("Name is required.", errors[nameof(request.Name)]);
         Assert.Contains("Membership type is required.", errors[nameof(request.MembershipType)]);
         Assert.Contains("Date of birth is required.", errors[nameof(request.DateOfBirth)]);
+    }
+
+    [Fact]
+    public void Validate_MissingOptionalFields_ReturnsNoErrors()
+    {
+        // Arrange
+        var request = new RegisterMemberRequest(
+            Name: "John Doe",
+            PhoneNumber: null,
+            Email: null,
+            DateOfBirth: "1990-01-01",
+            MembershipType: "Standard",
+            StaffId: null,
+            Street: null,
+            City: null,
+            PostalCode: null,
+            Country: null
+        );
+
+        // Act
+        var errors = RegisterMemberRequestValidator.Validate(request);
+
+        // Assert
+        Assert.Empty(errors);
     }
 }
