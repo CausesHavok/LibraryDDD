@@ -1,6 +1,4 @@
-﻿using LibraryDDD.Api.Parsing;
-
-namespace LibraryDDD.Api.Tests;
+﻿namespace LibraryDDD.Api.Parsing.Tests;
 
 public class ApiDateOnlyParserTests
 {
