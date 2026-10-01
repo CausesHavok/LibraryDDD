@@ -3,8 +3,8 @@ namespace LibraryDDD.Domain.Aggregates.Member;
 
 internal record ContactInformation
 {
-    public readonly Maybe<Email> Email;
-    public readonly Maybe<PhoneNo> PhoneNo;
+    public Maybe<Email> Email { get; }
+    public Maybe<PhoneNo> PhoneNo { get; }
 
     public ContactInformation(Maybe<Email> email, Maybe<PhoneNo> phoneNo)
     {
@@ -17,6 +17,4 @@ internal record ContactInformation
 
     private static bool IsContactInformationValid(Maybe<Email> email, Maybe<PhoneNo> phoneNo) =>
         email is Maybe<Email>.Some || phoneNo is Maybe<PhoneNo>.Some;
-    
-
 }
