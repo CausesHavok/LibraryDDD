@@ -6,8 +6,9 @@ LibraryDDD.Domain.Aggregates.Member.Member.Id.get -> LibraryDDD.Domain.Aggregate
 LibraryDDD.Domain.Aggregates.Member.MemberId
 LibraryDDD.Domain.Aggregates.Member.MemberId.Value.get -> System.Guid
 LibraryDDD.Domain.Aggregates.Member.MemberRegistered
-LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberID.get -> LibraryDDD.Domain.Aggregates.Member.MemberId!
-LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberRegistered(LibraryDDD.Domain.Aggregates.Member.MemberId! MemberID) -> void
+LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberId.get -> LibraryDDD.Domain.Aggregates.Member.MemberId!
+LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberId.init -> void
+LibraryDDD.Domain.Aggregates.Member.MemberRegistered.MemberRegistered(LibraryDDD.Domain.Aggregates.Member.MemberId! MemberId) -> void
 LibraryDDD.Domain.Common.DTO.AddressFields
 LibraryDDD.Domain.Common.DTO.AddressFields.AddressFields(string? Street, string? City, string? PostalCode, string? Country) -> void
 LibraryDDD.Domain.Common.DTO.AddressFields.City.get -> string?
