@@ -76,5 +76,8 @@ public static class MemberFactory
     private static Maybe<StaffId> ToMaybeStaffId(string? staffId) =>
         staffId is null
             ? new Maybe<StaffId>.None()
-            : new Maybe<StaffId>.Some(new StaffId(staffId));
+            : new Maybe<StaffId>.Some(
+                new StaffId(
+                    new NonEmptyString(staffId))
+            );
 }
