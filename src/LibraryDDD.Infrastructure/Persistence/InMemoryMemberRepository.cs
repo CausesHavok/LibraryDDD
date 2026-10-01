@@ -8,7 +8,7 @@ namespace LibraryDDD.Infrastructure.Persistence;
 public sealed class InMemoryMemberRepository : IMemberRepository, ITracksAggregates
 {
     private readonly ConcurrentDictionary<MemberId, Member> _store = new();
-    private readonly List<Member> _tracked = new();
+    private readonly List<Member> _tracked = [];
 
     public IReadOnlyCollection<IAggregateRoot> TrackedAggregates => _tracked;
 
