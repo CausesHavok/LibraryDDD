@@ -12,16 +12,6 @@ internal sealed record Email
         Value = value;
     }
 
-    private static bool IsValidEmail(string email)
-    {
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    private static bool IsValidEmail(string email) 
+        => System.Net.Mail.MailAddress.TryCreate(email, out _);
 }
