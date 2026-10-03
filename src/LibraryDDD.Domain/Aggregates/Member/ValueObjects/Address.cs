@@ -1,7 +1,21 @@
 using LibraryDDD.Domain.Common.ValueObjects;
 namespace LibraryDDD.Domain.Aggregates.Member;
 
-internal sealed record Address(NonEmptyString Street, NonEmptyString City, NonEmptyString PostalCode, NonEmptyString Country)
+public sealed record Address
 {
-    public override string ToString() => $"{Street}, {City}, {PostalCode}, {Country}";
+    public NonEmptyString Street { get; }
+    public NonEmptyString City { get; }
+    public NonEmptyString PostalCode { get; }
+    public NonEmptyString Country { get; }
+
+    private Address(NonEmptyString street, NonEmptyString city, NonEmptyString postalCode, NonEmptyString country)
+    {
+        Street = street;
+        City = city;
+        PostalCode = postalCode;
+        Country = country;
+    }
+
+    public static Address Create(NonEmptyString street, NonEmptyString city, NonEmptyString postalCode, NonEmptyString country)
+     => new(street, city, postalCode, country);
 }
