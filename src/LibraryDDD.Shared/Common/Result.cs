@@ -1,5 +1,20 @@
 namespace LibraryDDD.Shared.Common;
 
+public sealed class Result<E>
+{
+    public bool IsSuccess { get; }
+    public E Error { get; }
+
+    private Result(bool isSuccess, E error)
+    {
+        IsSuccess = isSuccess;
+        Error = error;
+    }
+
+    public static Result<E> Fail(E error) => new(false, error);
+    public static Result<E> Ok() => new(true, default!);
+}
+
 public sealed class Result<T, E>
 {
     public bool IsSuccess { get; }
