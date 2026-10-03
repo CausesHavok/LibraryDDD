@@ -1,6 +1,8 @@
 using LibraryDDD.Domain.Common.ValueObjects;
 using LibraryDDD.Domain.Common.Interfaces;
 using LibraryDDD.Domain.Events;
+using LibraryDDD.Domain.Validation;
+using LibraryDDD.Shared.Common;
 
 namespace LibraryDDD.Domain.Aggregates.Member;
 
@@ -34,11 +36,9 @@ public class Member : IAggregateRoot
         MembershipStatus = MembershipStatus.Active;
         StaffId = staffId;
         Address = address;
-
-        Validate();
     }
 
-    internal static Member Create(
+    internal static Result<Member, MemberError> TryCreate(
         NonEmptyString name, 
         ContactInformation contactInformation,
         DateOnly dateOfBirth,
@@ -46,6 +46,11 @@ public class Member : IAggregateRoot
         Maybe<StaffId> staffId,
         Maybe<Address> address)
     {
+
+        var validationResult = Validate(membershipType, staffId);
+        if (!validationResult.IsSuccess)
+            return Result<Member, MemberError>.Fail(validationResult.Error);
+
         var member = new Member(
             name, 
             contactInformation, 
@@ -53,8 +58,9 @@ public class Member : IAggregateRoot
             membershipType,
             staffId,
             address);
+        
         member.AddDomainEvent(new MemberRegistered(member.Id));
-        return member;
+        return Result<Member, MemberError>.Ok(member);
     }
 
     private void AddDomainEvent(IDomainEvent @event) =>
@@ -62,16 +68,20 @@ public class Member : IAggregateRoot
 
     public void ClearDomainEvents() => _domainEvents.Clear();
     
-    private void Validate()
+    private static Result<MemberError> Validate(MembershipType membershipType, Maybe<StaffId> staffId)
     {
-        if (IsStaffWithoutStaffId())
-            throw new InvalidOperationException("Staff members must have a valid Staff ID.");
+        if (IsStaffWithoutStaffId(membershipType, staffId))
+            return Result<MemberError>.Fail(MemberError.StaffIdRequiredForStaffMembership);
 
-        if (IsNonStaffWithStaffId())
-            throw new InvalidOperationException("Only staff members can have a Staff ID.");
+        if (IsNonStaffWithStaffId(membershipType, staffId))
+            return Result<MemberError>.Fail(MemberError.InvalidStaffIdForNonStaffMembership);
+
+        return Result<MemberError>.Ok();
     }
     
-    private bool IsStaffWithoutStaffId() => MembershipType == MembershipType.Staff && StaffId is Maybe<StaffId>.None;
+    private static bool IsStaffWithoutStaffId(MembershipType membershipType, Maybe<StaffId> staffId) 
+        => membershipType == MembershipType.Staff && staffId is Maybe<StaffId>.None;
     
-    private bool IsNonStaffWithStaffId() => MembershipType != MembershipType.Staff && StaffId is Maybe<StaffId>.Some;
+    private static bool IsNonStaffWithStaffId(MembershipType membershipType, Maybe<StaffId> staffId) 
+        => membershipType != MembershipType.Staff && staffId is Maybe<StaffId>.Some;
 }
