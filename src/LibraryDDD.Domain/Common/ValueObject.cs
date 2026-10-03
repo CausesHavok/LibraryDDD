@@ -1,6 +1,6 @@
 namespace LibraryDDD.Domain.Common;
 
-internal abstract class ValueObject
+public abstract class ValueObject
 {
     protected abstract IEnumerable<object> GetEqualityComponents();
 

@@ -3,7 +3,7 @@ using LibraryDDD.Domain.Validation;
 using LibraryDDD.Shared.Common;
 namespace LibraryDDD.Domain.Aggregates.Member;
 
-internal record ContactInformation
+public record ContactInformation
 {
     public Maybe<Email> Email { get; }
     public Maybe<PhoneNo> PhoneNo { get; }

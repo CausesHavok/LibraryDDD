@@ -3,7 +3,7 @@ using LibraryDDD.Shared.Common;
 
 namespace LibraryDDD.Domain.Aggregates.Member;
 
-internal sealed record Email
+public sealed record Email
 {
     public string Value { get; }
 

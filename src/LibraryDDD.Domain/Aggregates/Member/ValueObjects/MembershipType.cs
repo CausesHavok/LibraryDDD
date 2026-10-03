@@ -4,7 +4,7 @@ using LibraryDDD.Shared.Common;
 
 namespace LibraryDDD.Domain.Aggregates.Member;
 
-internal sealed class MembershipType : ValueObject
+public sealed class MembershipType : ValueObject
 {
     public string Value { get; }
 

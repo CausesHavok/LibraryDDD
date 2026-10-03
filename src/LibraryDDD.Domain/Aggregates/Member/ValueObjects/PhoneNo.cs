@@ -4,7 +4,7 @@ using LibraryDDD.Shared.Common;
 
 namespace LibraryDDD.Domain.Aggregates.Member;
 
-internal sealed record PhoneNo
+public sealed record PhoneNo
 {
     public NonEmptyString Value { get; }
 
