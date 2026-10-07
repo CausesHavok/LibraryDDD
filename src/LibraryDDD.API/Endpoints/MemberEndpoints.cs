@@ -18,7 +18,13 @@ public static class MemberEndpoints
             
             var command = RegisterMemberCommandMapper.Create(request);
             var result = await handler.Handle(command);
-            return Results.Ok(RegisterMemberResponseMapper.Map(result));
+            if (!result.IsSuccess)
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    [result.Error.Code] = [result.Error.Message]
+                });
+
+            return Results.Ok(RegisterMemberResponseMapper.Map(result.Value));
         });
     }
 }

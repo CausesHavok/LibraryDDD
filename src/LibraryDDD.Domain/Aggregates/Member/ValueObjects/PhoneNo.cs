@@ -9,7 +9,7 @@ public sealed record PhoneNo
     public NonEmptyString Value { get; }
 
     private PhoneNo(NonEmptyString value)
-    {   
+    {
         Value = value;
     }
 
@@ -21,6 +21,15 @@ public sealed record PhoneNo
         return Result<PhoneNo, PhoneNoError>.Ok(new PhoneNo(value));
     }
 
+    public static Result<PhoneNo, PhoneNoError> TryCreate(string value)
+    {
+        var nonEmptyString = NonEmptyString.TryCreate(value);
+        if (!nonEmptyString.IsSuccess)
+            return Result<PhoneNo, PhoneNoError>.Fail(MapError(nonEmptyString.Error));
+
+        return TryCreate(nonEmptyString.Value);
+    }
+
     private static bool IsValidPhoneNo(NonEmptyString phoneNo)
     {
         // Simple validation: checks if the phone number contains only digits and optional '+' at the start
@@ -30,4 +39,12 @@ public sealed record PhoneNo
 
         return phoneNoValue.All(char.IsDigit);
     }
+
+    private static PhoneNoError MapError(NonEmptyStringError error) =>
+        #pragma warning disable CS8524
+        error switch
+        {
+            NonEmptyStringError.Empty => PhoneNoError.Empty,
+        };
+        #pragma warning restore CS8524
 }

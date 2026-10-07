@@ -1,6 +1,6 @@
 namespace LibraryDDD.Domain.Validation;
-public enum PhoneNoError
+
+public enum StaffIdError
 {
-    InvalidFormat,
     Empty
 }

@@ -18,4 +18,5 @@ public sealed record Address
 
     public static Address Create(NonEmptyString street, NonEmptyString city, NonEmptyString postalCode, NonEmptyString country)
      => new(street, city, postalCode, country);
+
 }

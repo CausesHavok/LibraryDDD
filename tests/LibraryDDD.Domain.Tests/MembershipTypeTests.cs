@@ -11,37 +11,44 @@ public class MembershipTypeTests
     public void FromString_ValidValue_ReturnsMembershipType(string value)
     {
         // Act
-        var membershipType = MembershipType.FromString(value);
+        var result = MembershipType.TryCreate(value);
 
         // Assert
-        Assert.Equal(value, membershipType.Value);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(value, result.Value.Value);
     }
 
     [Theory]
     [InlineData("InvalidType")]
     [InlineData("")]
-    public void FromString_InvalidValue_ThrowsArgumentException(string value)
+    public void FromString_InvalidValue_ReturnsFailure(string value)
     {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => MembershipType.FromString(value!));
+        // Act
+        var result = MembershipType.TryCreate(value);
+
+        // Assert
+        Assert.False(result.IsSuccess);
     }
 
     [Fact]
-    public void FromString_NullValue_ThrowsArgumentException()
+    public void FromString_NullValue_ReturnsFailure()
     {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => MembershipType.FromString(null!));
+        // Act
+        var result = MembershipType.TryCreate(null!);
+
+        // Assert
+        Assert.False(result.IsSuccess);
     }
 
     [Fact]
     public void Adult_ShouldEqual_Adult_AndNotOtherTypes()
     {
         var adult1 = MembershipType.Adult;
-        var adult2 = MembershipType.FromString("Adult");
+        var adult2 = MembershipType.TryCreate("Adult");
         var child = MembershipType.Child;
         var staff = MembershipType.Staff;
 
-        Assert.Equal(adult1, adult2);
+        Assert.Equal(adult1, adult2.Value);
         Assert.NotEqual(adult1, child);
         Assert.NotEqual(adult1, staff);
     }
@@ -50,11 +57,11 @@ public class MembershipTypeTests
     public void Child_ShouldEqual_Child_AndNotOtherTypes()
     {
         var child1 = MembershipType.Child;
-        var child2 = MembershipType.FromString("Child");
+        var child2 = MembershipType.TryCreate("Child");
         var adult = MembershipType.Adult;
         var staff = MembershipType.Staff;
 
-        Assert.Equal(child1, child2);
+        Assert.Equal(child1, child2.Value);
         Assert.NotEqual(child1, adult);
         Assert.NotEqual(child1, staff);
     }
@@ -63,11 +70,11 @@ public class MembershipTypeTests
     public void Staff_ShouldEqual_Staff_AndNotOtherTypes()
     {
         var staff1 = MembershipType.Staff;
-        var staff2 = MembershipType.FromString("Staff");
+        var staff2 = MembershipType.TryCreate("Staff");
         var adult = MembershipType.Adult;
         var child = MembershipType.Child;
 
-        Assert.Equal(staff1, staff2);
+        Assert.Equal(staff1, staff2.Value);
         Assert.NotEqual(staff1, adult);
         Assert.NotEqual(staff1, child);
     }
@@ -76,20 +83,19 @@ public class MembershipTypeTests
     public void Equality_ShouldBeConsistentAcrossInstances()
     {
         var adult1 = MembershipType.Adult;
-        var adult2 = MembershipType.FromString("Adult");
+        var adult2 = MembershipType.TryCreate("Adult");
 
-        Assert.Equal(adult1, adult2);
-        Assert.True(adult1.Equals(adult2));
-        Assert.Equal(adult1.GetHashCode(), adult2.GetHashCode());
+        Assert.Equal(adult1, adult2.Value);
+        Assert.True(adult1.Equals(adult2.Value));
+        Assert.Equal(adult1.GetHashCode(), adult2.Value.GetHashCode());
     }
 
     [Fact]
     public void Instances_WithSameValue_ShouldNotBeSameReference()
     {
         var adult1 = MembershipType.Adult;
-        var adult2 = MembershipType.FromString("Adult");
+        var adult2 = MembershipType.TryCreate("Adult");
 
-        Assert.False(ReferenceEquals(adult1, adult2));
+        Assert.False(ReferenceEquals(adult1, adult2.Value));
     }
-
 }

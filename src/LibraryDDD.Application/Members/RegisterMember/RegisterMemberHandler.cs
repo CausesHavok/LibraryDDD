@@ -1,5 +1,7 @@
 using LibraryDDD.Application.Common.Interfaces;
+using LibraryDDD.Application.Validation;
 using LibraryDDD.Domain.Aggregates.Member;
+using LibraryDDD.Shared.Common;
 namespace LibraryDDD.Application.Members.RegisterMember;
 
 public sealed class RegisterMemberHandler
@@ -16,25 +18,17 @@ public sealed class RegisterMemberHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<RegisterMemberResult> Handle(RegisterMemberCommand command)
+    public async Task<Result<RegisterMemberResult, ValidationError>> Handle(RegisterMemberCommand command)
     {
-        RegisterMemberCommandValidator.Validate(command);
-        var addressFields = AddressInputMapper.ToAddressFields(command.Address);
+        var memberResult = RegisterMemberAssembler.Assemble(command);
+        if (!memberResult.IsSuccess)
+            return Result<RegisterMemberResult, ValidationError>.Fail(memberResult.Error);
 
-        var member = MemberFactory.Create(
-            command.Name,
-            command.PhoneNumber,
-            command.Email,
-            command.DateOfBirth,
-            command.MembershipType,
-            command.StaffId,
-            addressFields
-        );
-
+        var member = memberResult.Value;
         await _memberRepository.AddAsync(member);
         await _unitOfWork.CommitAsync();
         
-        return CreateResult(member);
+        return Result<RegisterMemberResult, ValidationError>.Ok(CreateResult(member));
     }
 
     private RegisterMemberResult CreateResult(Member member) =>
