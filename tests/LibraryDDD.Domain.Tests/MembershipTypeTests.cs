@@ -91,11 +91,11 @@ public class MembershipTypeTests
     }
 
     [Fact]
-    public void Instances_WithSameValue_ShouldNotBeSameReference()
+    public void Instances_WithSameValue_ShouldBeSameReference()
     {
         var adult1 = MembershipType.Adult;
         var adult2 = MembershipType.TryCreate("Adult");
 
-        Assert.False(ReferenceEquals(adult1, adult2.Value));
+        Assert.True(ReferenceEquals(adult1, adult2.Value));
     }
 }
