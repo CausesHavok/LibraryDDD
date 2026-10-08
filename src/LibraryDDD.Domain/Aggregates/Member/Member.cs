@@ -38,7 +38,7 @@ public class Member : IAggregateRoot
         Address = address;
     }
 
-    internal static Result<Member, MemberError> TryCreate(
+    public static Result<Member, MemberError> TryCreate(
         NonEmptyString name, 
         ContactInformation contactInformation,
         DateOnly dateOfBirth,

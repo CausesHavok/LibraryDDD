@@ -123,7 +123,7 @@ internal static class RegisterMemberAssembler
 
     private static Result<Member, ValidationError> ConstructMember(NonEmptyString name, ContactInformation contactInformation, DateOnly dateOfBirth, MembershipType membershipType, Maybe<StaffId> staffId, Maybe<Address> address)
     {
-        var memberResult = MemberFactory.TryCreate
+        var memberResult = Member.TryCreate
         (
             name,
             contactInformation,
