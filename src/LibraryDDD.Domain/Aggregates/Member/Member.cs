@@ -11,7 +11,7 @@ public class Member : IAggregateRoot
     public MemberId Id { get; private set; }
     internal NonEmptyString Name { get; private set; }
     internal ContactInformation ContactInformation { get; private set; }
-    internal DateOnly DateOfBirth { get; private set; }
+    internal DateOfBirth DateOfBirth { get; private set; }
     internal MembershipType MembershipType { get; private set; }
     internal MembershipStatus MembershipStatus { get; private set; }
     internal Maybe<StaffId> StaffId { get; private set; }
@@ -23,7 +23,7 @@ public class Member : IAggregateRoot
     private Member(
         NonEmptyString name, 
         ContactInformation contactInformation,
-        DateOnly dateOfBirth,
+        DateOfBirth dateOfBirth,
         MembershipType membershipType,
         Maybe<StaffId> staffId,
         Maybe<Address> address)
@@ -41,7 +41,7 @@ public class Member : IAggregateRoot
     public static Result<Member, MemberError> TryCreate(
         NonEmptyString name, 
         ContactInformation contactInformation,
-        DateOnly dateOfBirth,
+        DateOfBirth dateOfBirth,
         MembershipType membershipType,
         Maybe<StaffId> staffId,
         Maybe<Address> address)

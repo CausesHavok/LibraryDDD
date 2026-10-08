@@ -25,7 +25,9 @@ internal static class RegisterMemberAssembler
         if (!contactInformationResult.IsSuccess)
             return Result<Member, ValidationError>.Fail(contactInformationResult.Error);
 
-        var dateOfBirth = command.DateOfBirth;
+        var dateOfBirthResult = ConstructDateOfBirth(command.DateOfBirth);
+        if (!dateOfBirthResult.IsSuccess)
+            return Result<Member, ValidationError>.Fail(dateOfBirthResult.Error);
 
         var membershipTypeResult = ConstructMembershipType(command.MembershipType);
         if (!membershipTypeResult.IsSuccess)
@@ -39,7 +41,7 @@ internal static class RegisterMemberAssembler
             (
                 nameResult.Value,
                 contactInformationResult.Value,
-                dateOfBirth,
+                dateOfBirthResult.Value,
                 membershipTypeResult.Value,
                 staffIdResult.Value,
                 addressResult.Value
@@ -101,6 +103,14 @@ internal static class RegisterMemberAssembler
         return Result<Maybe<Email>, ValidationError>.Ok(maybeEmail);
     }
 
+    private static Result<DateOfBirth, ValidationError> ConstructDateOfBirth(DateOnly dateOnly)
+    {
+        var dateOfBirthResult = DateOfBirth.TryCreate(dateOnly);
+        if(!dateOfBirthResult.IsSuccess)
+            return Result<DateOfBirth, ValidationError>.Fail(MapError(dateOfBirthResult.Error));
+        return Result<DateOfBirth, ValidationError>.Ok(dateOfBirthResult.Value);
+    }
+
     private static Result<MembershipType, ValidationError> ConstructMembershipType(string membershipType)
     {
         var membershipResult = MembershipType.TryCreate(membershipType);
@@ -121,7 +131,7 @@ internal static class RegisterMemberAssembler
         return Result<Maybe<StaffId>, ValidationError>.Ok( new Maybe<StaffId>.Some(staffIdResult.Value));
     }
 
-    private static Result<Member, ValidationError> ConstructMember(NonEmptyString name, ContactInformation contactInformation, DateOnly dateOfBirth, MembershipType membershipType, Maybe<StaffId> staffId, Maybe<Address> address)
+    private static Result<Member, ValidationError> ConstructMember(NonEmptyString name, ContactInformation contactInformation, DateOfBirth dateOfBirth, MembershipType membershipType, Maybe<StaffId> staffId, Maybe<Address> address)
     {
         var memberResult = Member.TryCreate
         (
@@ -171,6 +181,14 @@ internal static class RegisterMemberAssembler
             EmailError.Empty => new ValidationError("Email.Empty", "Email address cannot be blank when supplied.")
         };
         #pragma warning restore CS8524
+
+    private static ValidationError MapError(DateOfBirthError error) =>
+        #pragma warning disable CS8524
+        error switch
+        {
+            DateOfBirthError.FutureDate => new ValidationError("DateOfBirth.FutureDate", "Date of Birth cannot be in the future."),
+            DateOfBirthError.InvalidDate => new ValidationError("DateOfBirth.Invalid", "Date of birth must be between 01-01-1900 and today")
+        };
 
     private static ValidationError MapError(MembershipTypeError error) =>
         #pragma warning disable CS8524
