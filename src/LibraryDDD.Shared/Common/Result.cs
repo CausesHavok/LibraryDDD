@@ -18,21 +18,30 @@ public sealed class Result<E>
 public sealed class Result<T, E>
 {
     public bool IsSuccess { get; }
-    public T Value { get; }
-    public E Error { get; }
+
+    private readonly T? _value;
+    private readonly E? _error;
+
+    public T Value => IsSuccess
+        ? _value!
+        : throw new InvalidOperationException("Cannot read Value of a failed result.");
+
+    public E Error => !IsSuccess
+        ? _error!
+        : throw new InvalidOperationException("Cannot read Error of a successful result.");
 
     private Result(T value)
     {
         IsSuccess = true;
-        Value = value;
-        Error = default!;
+        _value = value;
+        _error = default!;
     }
 
     private Result(E error)
     {
         IsSuccess = false;
-        Error = error;
-        Value = default!;
+        _error = error;
+        _value = default!;
     }
 
     public static Result<T, E> Ok(T value) => new(value);
