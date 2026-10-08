@@ -53,7 +53,7 @@ internal static class RegisterMemberAssembler
     }
 
     private static Result<NonEmptyString, ValidationError> ConstructName(string name)
-    {
+    {   
         var nameResult = NonEmptyString.TryCreate(name);
         if (!nameResult.IsSuccess)
             return Result<NonEmptyString, ValidationError>.Fail(MapNameError(nameResult.Error));
@@ -103,21 +103,11 @@ internal static class RegisterMemberAssembler
         return Result<Maybe<Email>, ValidationError>.Ok(maybeEmail);
     }
 
-    private static Result<DateOfBirth, ValidationError> ConstructDateOfBirth(DateOnly dateOnly)
-    {
-        var dateOfBirthResult = DateOfBirth.TryCreate(dateOnly);
-        if(!dateOfBirthResult.IsSuccess)
-            return Result<DateOfBirth, ValidationError>.Fail(MapError(dateOfBirthResult.Error));
-        return Result<DateOfBirth, ValidationError>.Ok(dateOfBirthResult.Value);
-    }
+    private static Result<DateOfBirth, ValidationError> ConstructDateOfBirth(DateOnly dateOnly) =>
+        DateOfBirth.TryCreate(dateOnly).MapError(MapError);
 
-    private static Result<MembershipType, ValidationError> ConstructMembershipType(string membershipType)
-    {
-        var membershipResult = MembershipType.TryCreate(membershipType);
-        if (!membershipResult.IsSuccess)
-            return Result<MembershipType, ValidationError>.Fail(MapError(membershipResult.Error));
-        return Result<MembershipType, ValidationError>.Ok(membershipResult.Value);
-    }
+    private static Result<MembershipType, ValidationError> ConstructMembershipType(string membershipType) =>
+        MembershipType.TryCreate(membershipType).MapError(MapError);
 
     private static Result<Maybe<StaffId>, ValidationError> ConstructStaffId(string? staffId)
     {
@@ -131,9 +121,15 @@ internal static class RegisterMemberAssembler
         return Result<Maybe<StaffId>, ValidationError>.Ok( new Maybe<StaffId>.Some(staffIdResult.Value));
     }
 
-    private static Result<Member, ValidationError> ConstructMember(NonEmptyString name, ContactInformation contactInformation, DateOfBirth dateOfBirth, MembershipType membershipType, Maybe<StaffId> staffId, Maybe<Address> address)
-    {
-        var memberResult = Member.TryCreate
+    private static Result<Member, ValidationError> ConstructMember
+    (
+        NonEmptyString name, 
+        ContactInformation contactInformation, 
+        DateOfBirth dateOfBirth, 
+        MembershipType membershipType, 
+        Maybe<StaffId> staffId, 
+        Maybe<Address> address)
+    => Member.TryCreate
         (
             name,
             contactInformation,
@@ -141,11 +137,8 @@ internal static class RegisterMemberAssembler
             membershipType,
             staffId,
             address
-        );
-        if (!memberResult.IsSuccess)
-            return Result<Member, ValidationError>.Fail(MapError(memberResult.Error));
-        return Result<Member, ValidationError>.Ok(memberResult.Value);
-    }
+        ).MapError(MapError);
+
         
     private static ValidationError MapNameError(NonEmptyStringError error) =>
     #pragma warning disable CS8524
@@ -189,6 +182,7 @@ internal static class RegisterMemberAssembler
             DateOfBirthError.FutureDate => new ValidationError("DateOfBirth.FutureDate", "Date of Birth cannot be in the future."),
             DateOfBirthError.InvalidDate => new ValidationError("DateOfBirth.Invalid", "Date of birth must be between 01-01-1900 and today")
         };
+        #pragma warning restore
 
     private static ValidationError MapError(MembershipTypeError error) =>
         #pragma warning disable CS8524
