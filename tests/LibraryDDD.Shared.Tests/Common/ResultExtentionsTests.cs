@@ -49,4 +49,14 @@ public class ResultExtensionsTests
 
         Assert.Throws<ArgumentNullException>(() => result.MapError(map!));
     }
+
+    [Fact]
+    public void ResultOfValue_WhenValueAndErrorTypesMatch_ExposesCorrectPayload()
+    {
+        var success = Result<string, string>.Ok("value");
+        var failure = Result<string, string>.Fail("error");
+
+        Assert.Equal("value", success.Value);
+        Assert.Equal("error", failure.Error);
+    }
 }
