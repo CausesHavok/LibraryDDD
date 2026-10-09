@@ -58,5 +58,28 @@ public class NullChecksTests
     [MemberData(nameof(NoneNullCases))]
     public void NoneNull_WithAllValuesNonNull_ReturnsTrue(object?[] values) =>
         Assert.True(NullChecks.NoneNull(values));
+
+    [Fact]
+    public void AllNull_NullInput_ThrowsError() =>
+        Assert.Throws<ArgumentNullException>(() => NullChecks.AllNull(null!));
     
+    [Fact]
+    public void AnyNull_NullInput_ThrowsError() =>
+        Assert.Throws<ArgumentNullException>(() => NullChecks.AnyNull(null!));
+
+    [Fact]
+    public void NoneNull_NullInput_ThrowsError() =>
+        Assert.Throws<ArgumentNullException>(() => NullChecks.NoneNull(null!)); 
+
+    [Fact]
+    public void AllNull_EmptyInput_ThrowsError() =>
+        Assert.Throws<ArgumentOutOfRangeException>(() => NullChecks.AllNull());
+    
+    [Fact]
+    public void AnyNull_EmptyInput_ThrowsError() =>
+        Assert.Throws<ArgumentOutOfRangeException>(() => NullChecks.AnyNull());
+
+    [Fact]
+    public void NoneNull_EmptyInput_ThrowsError() =>
+        Assert.Throws<ArgumentOutOfRangeException>(() => NullChecks.NoneNull());
 }
