@@ -1,30 +1,53 @@
-# 1. Clean old coverage results
-Write-Host "Cleaning old coverage folders..."
-Get-ChildItem -Recurse -Directory -Filter "TestResults" | ForEach-Object {
-    Remove-Item $_.FullName -Recurse -Force
+$ErrorActionPreference = "Stop"
+
+$root = $PSScriptRoot
+$resultsDirectory = Join-Path $root "TestResults/Coverage"
+$reportDirectory = Join-Path $root "coverage-report"
+$solution = Join-Path $root "LibraryDDD.sln"
+
+Push-Location $root
+try {
+    Remove-Item $resultsDirectory -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item $reportDirectory -Recurse -Force -ErrorAction SilentlyContinue
+
+    New-Item $resultsDirectory -ItemType Directory -Force | Out-Null
+
+    Write-Host "Running tests with coverage..."
+    dotnet test $solution `
+        --collect:"XPlat Code Coverage" `
+        --results-directory $resultsDirectory
+
+    $testExitCode = $LASTEXITCODE
+
+    $coverageFiles = @(
+        Get-ChildItem $resultsDirectory -Filter "coverage.cobertura.xml" -Recurse -File
+    )
+
+    if ($coverageFiles.Count -eq 0) {
+        Write-Error "No coverage files were produced."
+        exit 1
+    }
+
+    $reports = ($coverageFiles.FullName -join ";")
+
+    Write-Host "Generating merged coverage report from $($coverageFiles.Count) file(s)..."
+    dotnet tool run reportgenerator `
+        "-reports:$reports" `
+        "-targetdir:$reportDirectory" `
+        "-reporttypes:Html"
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "ReportGenerator failed."
+        exit $LASTEXITCODE
+    }
+
+    Write-Host "Coverage report: $(Join-Path $reportDirectory 'index.html')"
+
+    if ($testExitCode -ne 0) {
+        Write-Error "Tests failed with exit code $testExitCode. The coverage report was still generated."
+        exit $testExitCode
+    }
 }
-
-# 2. Run tests with coverage
-Write-Host "Running tests..."
-dotnet test LibraryDDD.sln --collect:"XPlat Code Coverage"
-
-# 3. Find the newest coverage file
-Write-Host "Locating newest coverage file..."
-$latestCoverage = Get-ChildItem -Recurse -Filter "coverage.cobertura.xml" |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1
-
-if (-not $latestCoverage) {
-    Write-Host "No coverage file found."
-    exit 1
+finally {
+    Pop-Location
 }
-
-Write-Host "Using coverage file: $($latestCoverage.FullName)"
-
-# 4. Generate report
-dotnet tool run reportgenerator `
-    -reports:$latestCoverage.FullName `
-    -targetdir:"coverage-report" `
-    -reporttypes:Html
-
-Write-Host "Coverage report generated."
