@@ -3,12 +3,16 @@ namespace LibraryDDD.Shared.Common;
 public sealed class Result<E>
 {
     public bool IsSuccess { get; }
-    public E Error { get; }
+
+    private readonly E? _error;
+    public E Error => !IsSuccess
+        ? _error!
+        : throw new InvalidOperationException("Cannot read Value of a failed result.");
 
     private Result(bool isSuccess, E error)
     {
         IsSuccess = isSuccess;
-        Error = error;
+        _error = error;
     }
 
     public static Result<E> Fail(E error) => new(false, error);
