@@ -9,10 +9,7 @@ public sealed record Email
     public NonEmptyString Value { get; }
 
     private Email(NonEmptyString value)
-    {
-        if (!IsValidEmail(value))
-            throw new ArgumentException("Invalid email.", nameof(value));
-        
+    {        
         Value = value;
     }
 
