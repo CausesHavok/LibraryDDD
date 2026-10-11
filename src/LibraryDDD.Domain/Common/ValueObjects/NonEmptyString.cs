@@ -8,9 +8,6 @@ public sealed record NonEmptyString
     
     private NonEmptyString(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Value must not be empty.", nameof(value));
-
         Value = value;
     }
 
