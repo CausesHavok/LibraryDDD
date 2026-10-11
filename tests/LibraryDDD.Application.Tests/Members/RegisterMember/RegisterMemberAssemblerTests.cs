@@ -87,6 +87,7 @@ public class RegisterMemberAssemblerTests
         AssertError(command, "ContactInformation.Required");
     }
 
+
     [Fact]
     public void Assemble_FutureDateOfBirth_ReturnsFutureDateError()
     {
@@ -136,6 +137,16 @@ public class RegisterMemberAssemblerTests
     public void Assemble_NonStaffMembershipWithStaffId_ReturnsInvalidStaffIdError()
     {
         AssertError(CreateCommand() with { MembershipType = "Adult", StaffId = "STAFF-123" }, "StaffId.NotAllowedForNonStaffMembership");
+    }
+
+    [Fact]
+    public void Assemble_NoEmail_ReturnsMember()
+    {
+        var command = CreateCommand() with { Email = null, PhoneNumber = "121234" };
+
+        var result = RegisterMemberAssembler.Assemble(command);
+
+        Assert.True(result.IsSuccess);
     }
 
     [Fact]
