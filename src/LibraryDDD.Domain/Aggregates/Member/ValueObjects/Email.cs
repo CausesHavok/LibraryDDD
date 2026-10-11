@@ -34,7 +34,7 @@ public sealed record Email
     }
 
     private static bool IsValidEmail(NonEmptyString email) 
-        => System.Net.Mail.MailAddress.TryCreate(email.ToString(), out _);
+        => System.Net.Mail.MailAddress.TryCreate(email.Value, out _);
 
     private static EmailError MapError(NonEmptyStringError error) =>
         #pragma warning disable CS8524
