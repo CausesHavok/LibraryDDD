@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LibraryDDD.API\LibraryDDD.API.csproj" />
+    <ProjectReference Include="..\..\src\LibraryDDD.Infrastructure\LibraryDDD.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
