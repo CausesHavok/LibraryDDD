@@ -1,93 +1,65 @@
-# LibraryDDD — Domain‑Driven Design Sandbox
+# LibraryDDD
 
-A small, structured .NET project where I practice **Domain‑Driven Design**, **Clean Architecture**, and **maintainable system design**.  
-The domain is a simple library system — intentionally familiar — so the focus stays on modelling, boundaries, and clarity.
+A .NET 10 learning project exploring domain modeling, layered architecture, and testing through a library-member registration feature.
 
----
+This project serves two purposes: a place to practice software design, and a concrete example of how I approach modeling, validation, and application boundaries. It is an evolving prototype, not a production-ready library system.
 
-## 📚 Purpose
+## Current Scope
 
-This repository is my sandbox for exploring:
+The implemented vertical slice is member registration:
 
-- Domain‑Driven Design (DDD)
-- Clean Architecture / Onion Architecture
-- SOLID principles
-- Test‑Driven Development (TDD)
-- Separation of concerns and clear domain boundaries
+- `POST /members/register` accepts registration details.
+- The API validates basic request fields and date format, then maps the request to an application command.
+- The application assembles a member through domain value objects and invariants.
+- A successful registration creates a `MemberRegistered` domain event and returns the generated member ID.
+- Persistence currently uses an in-memory repository and unit of work. Data does not survive application restarts.
 
-I use this project to anchor concepts from books such as *Domain‑Driven Design Distilled*, *Learning Domain‑Driven Design*, *Clean Code*, and *Clean Architecture*.
+The domain includes member identity, membership type, contact information, optional address, and staff-ID rules. Borrowing, returns, reservations, and member lifecycle operations are not implemented.
 
----
+## Structure
 
-## 🧠 Background
+| Project | Responsibility |
+| --- | --- |
+| `LibraryDDD.Domain` | Member aggregate, value objects, domain events, and domain validation |
+| `LibraryDDD.Application` | Registration workflow, command assembly, and application errors |
+| `LibraryDDD.Infrastructure` | In-memory repository and unit of work |
+| `LibraryDDD.API` | Minimal API endpoint, request validation, and API mappings |
+| `LibraryDDD.Shared` | Shared result and null-check utilities |
 
-While living in Japan and caring for my daughter full‑time, I used the opportunity to deepen my engineering foundation after completing my BSc in Computer Science.  
-This project became the practical anchor for months of slow, steady study of DDD, TDD, clean code, and architectural patterns.
+The solution uses a layered design inspired by Clean Architecture and DDD. The goal is to keep domain rules independent of HTTP and persistence concerns.
 
----
+## Tests
 
-## 🏛 Architecture Overview
+Tests are organized by project and cover domain behavior, application workflows, infrastructure components, shared utilities, and API behavior.
 
-The solution follows a classic **Clean Architecture / Onion Architecture** structure:
+Run the solution tests with:
 
+```bash
+dotnet test LibraryDDD.sln
+```
 
-src/  
-  LibraryDDD.Domain/         # Aggregates, Value Objects, Events, Factories  
-  LibraryDDD.Application/    # Commands, Handlers, Validators, DTOs  
-  LibraryDDD.Infrastructure/ # Persistence, Unit of Work, Repositories  
-  LibraryDDD.API/            # Endpoints, Requests, Responses, Mappers  
+API endpoint tests exercise requests through an in-process HTTP host. They currently use test-specific dependency registrations, so they do not yet verify the production dependency-injection composition.
 
-tests/  
-  LibraryDDD.Domain.Tests/  
-  LibraryDDD.Application.Tests/  
+## Current Limitations
 
+- Persistence is in-memory and intended for development and demonstration only.
+- The production dependency-injection setup still needs an end-to-end verification pass. In particular, the API resolves `RegisterMemberHandler`, and service registrations and lifetimes must support that request path.
+- There are no workflows for borrowing, returning, or reserving books.
+- The project does not claim to be production-ready.
 
-Each layer validates its own inputs and communicates outward using DTOs to maintain clear boundaries.  
-Inner layers remain pure and independent of infrastructure concerns.
+## Design Goals
 
----
+This project is an ongoing exercise in:
 
-## 🔍 Key Concepts Practiced
+- modeling invariants in domain types
+- keeping API, application, domain, and infrastructure responsibilities distinct
+- representing validation failures explicitly
+- testing behavior at both unit and HTTP boundaries
+- making architectural tradeoffs visible and explainable
 
-- Aggregate design and invariants  
-- Value objects and immutability  
-- Domain events and event dispatching  
-- Command/handler application layer  
-- DTO mapping and boundary protection  
-- Repository and Unit of Work patterns  
-- Minimal API endpoints over a domain model  
-- Separation of concerns and dependency inversion  
+## Next Steps
 
----
-
-## 📦 Current State
-
-The project currently focuses on the **member registration** vertical slice, including:
-
-- `RegisterMemberCommand`
-- `RegisterMemberHandler`
-- `Member` aggregate
-- Value objects such as `Email`, `PhoneNo`, `Address`
-- Domain event: `MemberRegistered`
-- In‑memory repository and Unit of Work
-
-It is a work in progress and will evolve as I continue refining the domain and architecture.  
-(As noted in the original README: “The project is mostly infrastructure at this point and is a work in progress.”) 
-
----
-
-## 🚀 Next Steps
-
-- Expand test coverage  
-- Add more domain behaviors (borrowing, returning, reservations)  
-- Introduce persistence beyond in‑memory  
-- Add integration tests  
-- Explore richer domain events and workflows  
-
----
-
-## ✔ Summary
-
-This project is not meant to be a full production system — it’s a deliberate practice environment for modelling, architecture, and maintainability.  
-It reflects how I think about software: clear boundaries, predictable behavior, and code that’s easy to reason about.
-
+1. Verify the production API dependency-injection graph with an end-to-end smoke test.
+2. Revisit in-memory service lifetimes and concurrency behavior.
+3. Add durable persistence if the project scope calls for it.
+4. Expand the domain only when there is a clear feature to model, such as borrowing or reservations.
