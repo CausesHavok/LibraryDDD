@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/TestResults/
+.git/
+.github/
+.vs/
+.vscode/
+tests/
+coverage-report/
+*.md
+cs-files.txt
+Dockerfile
+.dockerignore
