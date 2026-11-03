@@ -1,5 +1,7 @@
 # LibraryDDD
 
+![CI](https://github.com/CausesHavok/LibraryDDD/actions/workflows/ci.yml/badge.svg)
+
 A .NET 10 learning project exploring domain modeling, layered architecture, and testing through a library-member registration feature.
 
 This project serves two purposes: a place to practice software design, and a concrete example of how I approach modeling, validation, and application boundaries. It is an evolving prototype, not a production-ready library system.
@@ -38,12 +40,33 @@ Run the solution tests with:
 dotnet test LibraryDDD.sln
 ```
 
-API endpoint tests exercise requests through an in-process HTTP host. They currently use test-specific dependency registrations, so they do not yet verify the production dependency-injection composition.
+API endpoint tests exercise requests through an in-process HTTP host that uses the production registrations (`AddApplication()` and `AddInfrastructure()`). The host assembles them itself instead of running `Program.cs`, so the real startup path is covered by the container smoke test in CI.
+
+## Running with Docker
+
+```bash
+docker build -t libraryddd .
+docker run --rm -p 8080:8080 libraryddd
+```
+
+Register a member:
+
+```bash
+curl -X POST http://localhost:8080/members/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ada Lovelace","email":"ada@example.com","dateOfBirth":"1990-05-17","membershipType":"Adult"}'
+```
+
+The response contains the new `memberId`.
+
+## Continuous integration
+
+A GitHub Actions workflow runs on every pull request and on pushes to `main`. It builds the solution, runs the tests with coverage, builds the Docker image, starts the container and sends real requests to it: a valid registration must return `200` with a `memberId`, and an invalid date must return `400`. The first run of this smoke test caught a missing registration for `RegisterMemberHandler` that the in-process tests had hidden.
 
 ## Current Limitations
 
 - Persistence is in-memory and intended for development and demonstration only.
-- The production dependency-injection setup still needs an end-to-end verification pass. In particular, the API resolves `RegisterMemberHandler`, and service registrations and lifetimes must support that request path.
+- The in-memory repository is a singleton that also holds per-request tracking state, so it is not safe for concurrent requests (see #13).
 - There are no workflows for borrowing, returning, or reserving books.
 - The project does not claim to be production-ready.
 
@@ -59,7 +82,6 @@ This project is an ongoing exercise in:
 
 ## Next Steps
 
-1. Verify the production API dependency-injection graph with an end-to-end smoke test.
-2. Revisit in-memory service lifetimes and concurrency behavior.
-3. Add durable persistence if the project scope calls for it.
-4. Expand the domain only when there is a clear feature to model, such as borrowing or reservations.
+1. Separate the shared in-memory store from a per-request repository (#13).
+2. Add durable persistence if the project scope calls for it.
+3. Expand the domain only when there is a clear feature to model, such as borrowing or reservations.
