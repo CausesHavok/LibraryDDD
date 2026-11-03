@@ -8,13 +8,18 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        // Register the in-memory repository as the implementation
-        services.AddSingleton<IMemberRepository, InMemoryMemberRepository>();
-        services.AddSingleton<IUnitOfWork, InMemoryUnitOfWork>();
+        // 1. Create the repository once, for the whole life of the app.
+        services.AddSingleton<InMemoryMemberRepository>();
 
-        // Later you might add:
-        // services.AddDbContext<LibraryDbContext>(...);
-        // services.AddScoped<IMemberRepository, EfMemberRepository>();
+        // 2. "When someone asks for IMemberRepository, hand them that same instance."
+        services.AddSingleton<IMemberRepository>(
+            sp => sp.GetRequiredService<InMemoryMemberRepository>());
+
+        // 3. "When someone asks for ITracksAggregates, hand them that same instance too."
+        services.AddSingleton<ITracksAggregates>(
+            sp => sp.GetRequiredService<InMemoryMemberRepository>());
+
+        services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
 
         return services;
     }

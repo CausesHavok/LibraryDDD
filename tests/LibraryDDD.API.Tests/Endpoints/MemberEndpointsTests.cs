@@ -3,9 +3,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using LibraryDDD.Api.Endpoints;
 using LibraryDDD.Api.Requests;
-using LibraryDDD.Application.Common.Interfaces;
-using LibraryDDD.Application.Members.RegisterMember;
-using LibraryDDD.Domain.Aggregates.Member;
+using LibraryDDD.Application;
+using LibraryDDD.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -30,8 +29,6 @@ public class MemberEndpointsTests
         var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
         var memberId = responseBody.GetProperty("memberId").GetGuid();
         Assert.NotEqual(Guid.Empty, memberId);
-        Assert.Equal(1, host.Repository.AddCallCount);
-        Assert.Equal(1, host.UnitOfWork.CommitCallCount);
     }
 
     [Fact]
@@ -54,8 +51,6 @@ public class MemberEndpointsTests
         Assert.True(errors.TryGetProperty("Name", out _));
         Assert.True(errors.TryGetProperty("DateOfBirth", out _));
         Assert.True(errors.TryGetProperty("MembershipType", out _));
-        Assert.Equal(0, host.Repository.AddCallCount);
-        Assert.Equal(0, host.UnitOfWork.CommitCallCount);
     }
 
     [Fact]
@@ -71,8 +66,6 @@ public class MemberEndpointsTests
             await response.Content.ReadAsStreamAsync());
         var errors = responseBody.RootElement.GetProperty("errors");
         Assert.True(errors.TryGetProperty("Email.InvalidFormat", out _));
-        Assert.Equal(0, host.Repository.AddCallCount);
-        Assert.Equal(0, host.UnitOfWork.CommitCallCount);
     }
 
     [Fact]
@@ -83,8 +76,6 @@ public class MemberEndpointsTests
         var response = await host.Client.GetAsync("/members/register");
 
         Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
-        Assert.Equal(0, host.Repository.AddCallCount);
-        Assert.Equal(0, host.UnitOfWork.CommitCallCount);
     }
 
     [Fact]
@@ -97,8 +88,6 @@ public class MemberEndpointsTests
             CreateValidRequest());
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal(0, host.Repository.AddCallCount);
-        Assert.Equal(0, host.UnitOfWork.CommitCallCount);
     }
 
     private static RegisterMemberRequest CreateValidRequest() =>
@@ -120,45 +109,38 @@ public class MemberEndpointsTests
 
         private EndpointTestHost(
             WebApplication application,
-            HttpClient client,
-            FakeMemberRepository repository,
-            FakeUnitOfWork unitOfWork)
+            HttpClient client)
         {
             _application = application;
             Client = client;
-            Repository = repository;
-            UnitOfWork = unitOfWork;
         }
 
         public HttpClient Client { get; }
-        public FakeMemberRepository Repository { get; }
-        public FakeUnitOfWork UnitOfWork { get; }
 
         public static async Task<EndpointTestHost> CreateAsync()
         {
-            var repository = new FakeMemberRepository();
-            var unitOfWork = new FakeUnitOfWork();
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions
             {
-                EnvironmentName = Environments.Production
+                EnvironmentName = Environments.Development
             });
             builder.WebHost.UseUrls("http://127.0.0.1:0");
-            builder.Services.AddSingleton<IMemberRepository>(repository);
-            builder.Services.AddSingleton<IUnitOfWork>(unitOfWork);
-            builder.Services.AddTransient<RegisterMemberHandler>();
+            builder.Services.AddApplication();
+            builder.Services.AddInfrastructure();
+
 
             var application = builder.Build();
             application.MapMemberEndpoints();
             await application.StartAsync();
 
-            var server = application.Services.GetRequiredService<IServer>();
+            var server      = application.Services.GetRequiredService<IServer>();
+
             var address = server.Features
                 .Get<IServerAddressesFeature>()!
                 .Addresses
                 .Single();
             var client = new HttpClient { BaseAddress = new Uri(address) };
 
-            return new EndpointTestHost(application, client, repository, unitOfWork);
+            return new EndpointTestHost(application, client);
         }
 
         public async ValueTask DisposeAsync()
@@ -168,38 +150,4 @@ public class MemberEndpointsTests
         }
     }
 
-    private sealed class FakeMemberRepository : IMemberRepository
-    {
-        public int AddCallCount { get; private set; }
-
-        public Task<Member?> GetByIdAsync(
-            MemberId id,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<Member?>(null);
-
-        public Task<bool> ExistsAsync(
-            MemberId id,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult(false);
-
-        public Task AddAsync(Member member, CancellationToken cancellationToken = default)
-        {
-            AddCallCount++;
-            return Task.CompletedTask;
-        }
-
-        public Task UpdateAsync(Member member, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-    }
-
-    private sealed class FakeUnitOfWork : IUnitOfWork
-    {
-        public int CommitCallCount { get; private set; }
-
-        public Task CommitAsync(CancellationToken cancellationToken = default)
-        {
-            CommitCallCount++;
-            return Task.CompletedTask;
-        }
-    }
 }

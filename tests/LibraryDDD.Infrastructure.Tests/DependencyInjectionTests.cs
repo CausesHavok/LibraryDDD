@@ -1,6 +1,4 @@
-using LibraryDDD.Application.Common.Events;
 using LibraryDDD.Application.Common.Interfaces;
-using LibraryDDD.Infrastructure;
 using LibraryDDD.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,24 +7,34 @@ namespace LibraryDDD.Infrastructure.Tests;
 public class DependencyInjectionTests
 {
     [Fact]
-    public void AddInfrastructure_RegistersRepositoryAndUnitOfWorkAsSingletons()
+    public void AddInfrastructure_RegistersRepositoryAsSingletonAndUnitOfWorkAsScoped()
     {
         var services = new ServiceCollection();
-
         services.AddInfrastructure();
 
         var repositoryRegistration = Assert.Single(
-            services,
-            descriptor => descriptor.ServiceType == typeof(IMemberRepository));
+            services, d => d.ServiceType == typeof(IMemberRepository));
         Assert.Equal(ServiceLifetime.Singleton, repositoryRegistration.Lifetime);
-        Assert.Equal(typeof(InMemoryMemberRepository), repositoryRegistration.ImplementationType);
 
         var unitOfWorkRegistration = Assert.Single(
-            services,
-            descriptor => descriptor.ServiceType == typeof(IUnitOfWork));
-        Assert.Equal(ServiceLifetime.Singleton, unitOfWorkRegistration.Lifetime);
+            services, d => d.ServiceType == typeof(IUnitOfWork));
+        Assert.Equal(ServiceLifetime.Scoped, unitOfWorkRegistration.Lifetime);
         Assert.Equal(typeof(InMemoryUnitOfWork), unitOfWorkRegistration.ImplementationType);
 
         Assert.Same(services, services.AddInfrastructure());
     }
+
+    [Fact]
+    public void AddInfrastructure_RegistersTheSameRepositoryInstanceForStorageAndTracking()
+    {
+        var services = new ServiceCollection();
+        services.AddInfrastructure();
+        using var provider = services.BuildServiceProvider();
+
+        var repository = provider.GetRequiredService<IMemberRepository>();
+        var tracker = Assert.Single(provider.GetServices<ITracksAggregates>());
+
+        Assert.Same(repository, tracker);
+    }
+
 }
