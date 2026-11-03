@@ -24,9 +24,10 @@ public class DependencyInjectionTests
         var unitOfWorkRegistration = Assert.Single(
             services,
             descriptor => descriptor.ServiceType == typeof(IUnitOfWork));
-        Assert.Equal(ServiceLifetime.Singleton, unitOfWorkRegistration.Lifetime);
+        Assert.Equal(ServiceLifetime.Scoped, unitOfWorkRegistration.Lifetime);
         Assert.Equal(typeof(InMemoryUnitOfWork), unitOfWorkRegistration.ImplementationType);
 
         Assert.Same(services, services.AddInfrastructure());
     }
+
 }

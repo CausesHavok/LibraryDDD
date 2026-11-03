@@ -10,11 +10,7 @@ public static class DependencyInjection
     {
         // Register the in-memory repository as the implementation
         services.AddSingleton<IMemberRepository, InMemoryMemberRepository>();
-        services.AddSingleton<IUnitOfWork, InMemoryUnitOfWork>();
-
-        // Later you might add:
-        // services.AddDbContext<LibraryDbContext>(...);
-        // services.AddScoped<IMemberRepository, EfMemberRepository>();
+        services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
 
         return services;
     }

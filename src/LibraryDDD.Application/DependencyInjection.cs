@@ -2,6 +2,7 @@ using MediatR;
 using LibraryDDD.Application.Common.Events;
 using LibraryDDD.Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
+using LibraryDDD.Application.Members.RegisterMember;
 
 namespace LibraryDDD.Application;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
     {
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddScoped<RegisterMemberHandler>();
 
         services.Scan(scan => scan
             .FromAssemblyOf<IDomainEventHandler<IDomainEvent>>()
