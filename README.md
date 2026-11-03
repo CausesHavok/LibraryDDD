@@ -1,6 +1,7 @@
 # LibraryDDD
 
 ![CI](https://github.com/CausesHavok/LibraryDDD/actions/workflows/ci.yml/badge.svg)
+[![Line coverage](https://causeshavok.github.io/LibraryDDD/badge_linecoverage.svg)](https://causeshavok.github.io/LibraryDDD/)
 
 A .NET 10 learning project exploring domain modeling, layered architecture, and testing through a library-member registration feature.
 
