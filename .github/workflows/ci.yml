@@ -38,7 +38,7 @@ jobs:
           dotnet tool run reportgenerator \
             "-reports:TestResults/Coverage/**/coverage.cobertura.xml" \
             "-targetdir:coverage-report" \
-            "-reporttypes:Html;MarkdownSummaryGithub"
+            "-reporttypes:Html;MarkdownSummaryGithub;Badges"
           cat coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload coverage report
