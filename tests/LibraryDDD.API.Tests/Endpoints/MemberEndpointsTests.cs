@@ -4,7 +4,6 @@ using System.Text.Json;
 using LibraryDDD.Api.Endpoints;
 using LibraryDDD.Api.Requests;
 using LibraryDDD.Application;
-using LibraryDDD.Application.Common.Interfaces;
 using LibraryDDD.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
