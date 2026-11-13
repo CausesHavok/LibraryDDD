@@ -1,0 +1,8 @@
+
+
+
+.register-form { display: grid; gap: 1rem; max-width: 28rem; margin: 2rem auto; }
+.field { display: grid; gap: 0.25rem; }
+.field input, .field select { padding: 0.5rem; font: inherit; }
+.error { color: #b00020; font-size: 0.9rem; }
+button { padding: 0.6rem 1rem; font: inherit; }
